@@ -1,3 +1,6 @@
+using backend.DataService;
+using backend.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +11,19 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.AddControllers();
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("frontend", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173")
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
+    });
+});
+
+builder.Services.AddSingleton<SharedDb>();
 
 var app = builder.Build();
 
@@ -21,6 +37,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 app.MapControllers();
+
+app.MapHub<GameHub>("/game");
+
+app.UseCors("frontend");
 
 app.Run();

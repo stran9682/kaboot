@@ -1,35 +1,50 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import WaitingRoom from "./components/waitingroom"
+import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
+
+const MenuComponent = ({setMenuState, menu, joinLobby}: {setMenuState : (menu : number) => void, menu : number, joinLobby : (username: string, lobby: string) => Promise<void>}) => {
+  if (menu === 0){
+    return <h2 onClick={() => setMenuState(1)}>Join Game</h2>
+  }
+  else if (menu === 1){
+    return <WaitingRoom joinWaitingRoom={joinLobby}/>
+  }
+  return null;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
 
+  const [connection, setConnection] = useState<HubConnection>();
+
+  const [menuState, setMenuState] = useState (0);
+
+  const joinLobby = async (username : string, lobby : string)  => {
+    try {
+      const conn = new HubConnectionBuilder()
+        .withUrl("http://localhost:5285/game")
+        .configureLogging(LogLevel.Information)
+        .build();
+
+      conn.on("JoinLobby", (username, message) => {
+        console.log("message: ", message)
+      })      
+
+      await conn.start();
+      await conn.invoke("JoinLobby", {username, lobby})
+
+      setConnection(conn)
+
+    } catch(e) {
+      console.log(e);
+    }
+  }
+  
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <h1 onClick={() => setMenuState(0)}>Kaboot</h1>
+      <MenuComponent setMenuState={setMenuState} menu={menuState} joinLobby={joinLobby} />
     </>
   )
 }
-
 export default App
