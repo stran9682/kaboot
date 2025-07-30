@@ -5,11 +5,20 @@ import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signal
 
 const MenuComponent = ({setMenuState, menu, joinLobby}: {setMenuState : (menu : number) => void, menu : number, joinLobby : (username: string, lobby: string) => Promise<void>}) => {
   if (menu === 0){
-    return <h2 onClick={() => setMenuState(1)}>Join Game</h2>
+    return <>
+      <h2 onClick={() => setMenuState(1)}>Join Game</h2>
+
+      <h2 onClick={() => setMenuState(2)}>Create Game</h2>      
+
+    </>
   }
   else if (menu === 1){
     return <WaitingRoom joinWaitingRoom={joinLobby}/>
   }
+  else if (menu === 2){
+    return <h2>give me a second...</h2>
+  }
+
   return null;
 }
 

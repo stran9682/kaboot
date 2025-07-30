@@ -1,7 +1,12 @@
 using backend.DataService;
 using backend.Hubs;
+using backend.Models;
+using backend.DataService;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
+builder.Services.AddSingleton<MongoDbService>();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -23,6 +28,7 @@ builder.Services.AddCors(opt =>
     });
 });
 
+// TODO : maybe not the thing i need right now.
 builder.Services.AddSingleton<SharedDb>();
 
 var app = builder.Build();
