@@ -1,58 +1,46 @@
 import { useState } from 'react'
 import './App.css'
-import WaitingRoom from "./components/waitingroom"
-import { HubConnection, HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
-
-const MenuComponent = ({setMenuState, menu, joinLobby}: {setMenuState : (menu : number) => void, menu : number, joinLobby : (username: string, lobby: string) => Promise<void>}) => {
-  if (menu === 0){
-    return <>
-      <h2 onClick={() => setMenuState(1)}>Join Game</h2>
-
-      <h2 onClick={() => setMenuState(2)}>Create Game</h2>      
-
-    </>
-  }
-  else if (menu === 1){
-    return <WaitingRoom joinWaitingRoom={joinLobby}/>
-  }
-  else if (menu === 2){
-    return <h2>give me a second...</h2>
-  }
-
-  return null;
-}
+import MenuComponent from './components/MenuComponent';
+import { useSignalR } from "./components/SignalRConnection"
 
 function App() {
 
-  const [connection, setConnection] = useState<HubConnection>();
+  const [menuState, setMenuState] = useState(0);
+  const { invokeMethod, registerListener } = useSignalR("http://localhost:5285/game");
 
-  const [menuState, setMenuState] = useState (0);
+  const joinLobby = async (username: string, lobby: string) => {
+    registerListener("JoinLobby", (user, message) => {
+      console.log("message:", message);
+    });
 
-  const joinLobby = async (username : string, lobby : string)  => {
     try {
-      const conn = new HubConnectionBuilder()
-        .withUrl("http://localhost:5285/game")
-        .configureLogging(LogLevel.Information)
-        .build();
-
-      conn.on("JoinLobby", (username, message) => {
-        console.log("message: ", message)
-      })      
-
-      await conn.start();
-      await conn.invoke("JoinLobby", {username, lobby})
-
-      setConnection(conn)
-
-    } catch(e) {
+      await invokeMethod("JoinLobby", { username, lobby });
+    } catch (e) {
       console.log(e);
     }
-  }
-  
+  };
+
+  var counter = 0;
+
+  const createLobby = async (setPin: (pin: string) => void) => {
+    registerListener("CreateLobby", (pin: string) => {
+      counter += 1;
+      console.log(counter)
+
+      setPin(pin)
+    });
+
+    try {
+      await invokeMethod("CreateLobby");
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <>
       <h1 onClick={() => setMenuState(0)}>Kaboot</h1>
-      <MenuComponent setMenuState={setMenuState} menu={menuState} joinLobby={joinLobby} />
+      <MenuComponent setMenuState={setMenuState} menu={menuState} joinLobby={joinLobby} createLobby={createLobby}/>
     </>
   )
 }

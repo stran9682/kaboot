@@ -1,15 +1,21 @@
 using backend.DataService;
 using backend.Models;
 using Microsoft.AspNetCore.SignalR;
+using MongoDB.Driver;
 
 namespace backend.Hubs;
 
 public class GameHub : Hub
 {
     private readonly SharedDb _sharedDb;
-    
-    public GameHub(SharedDb sharedDb) => _sharedDb = sharedDb;
-    
+    private readonly MongoDbService _mongoDbService;
+
+    public GameHub(SharedDb sharedDb, MongoDbService  mongoDb)
+    {
+        _sharedDb = sharedDb;
+        _mongoDbService =  mongoDb;
+    }
+
     public async Task JoinLobbyTest(UserConnection connection)
     {
         await Clients.All.
@@ -43,13 +49,37 @@ public class GameHub : Hub
     public async Task CreateLobby()
     {
         // TODO : create game in mongoDb
+        Random random = new Random();
+        const int maxRetries = 5;
+        var attempt = 0;
+
+        while (attempt < maxRetries)
+        {
+            
+            int pin = random.Next(1, 99999);
+
+            try
+            {
+                GameInfo lobby = new GameInfo()
+                {
+                    AdminConnection = Context.ConnectionId,
+                    PinCode = pin
+                };
+
+                await _mongoDbService.CreateAsync(lobby);
+
+                await Clients.Caller
+                    .SendAsync("CreateLobby", pin.ToString());
+                
+                return;
+            }
+            catch (Exception ex)
+            {
+                attempt++;
+            }
+        }
         
-        // TODO : add the "admin" to game
-        await Groups.AddToGroupAsync(Context.ConnectionId, "some pin");
-        
-        // TODO : display the code
-        await Clients.User(Context.UserIdentifier)
-            .SendAsync("ReceiveGameCode", "the code");
+        throw new Exception("Failed to create lobby");
     }
     
 }

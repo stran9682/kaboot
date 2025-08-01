@@ -9,6 +9,8 @@ public class GameInfo
     [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; } = null!;
     
+    public int PinCode { get; set; }
+    
     public string AdminConnection {get; set;} = null!;
     
     public List<UserConnection> UserConnections { get; set; } = new List<UserConnection>();

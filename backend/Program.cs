@@ -1,7 +1,6 @@
 using backend.DataService;
 using backend.Hubs;
 using backend.Models;
-using backend.DataService;
 
 var builder = WebApplication.CreateBuilder(args);
 
