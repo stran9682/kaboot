@@ -1,19 +1,29 @@
 import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
-const WaitingRoom = ({ joinLobby } : { joinLobby : (username : string, lobby : string) => void}) => {
+const joinLobby = (username : string, lobby : string) => {
+
+}
+
+const WaitingRoom = () => {
 
     const [user, setUser] = useState <string> ("");
 
     const [lobby, setLobby] = useState <string> ("");
 
-    return <form onSubmit={ e => { e.preventDefault(); joinLobby(user, lobby)}}>
-        <input placeholder="name" onChange={e => setUser(e.target.value)}></input>
+    return <>
+        <NavLink to="/">
+            <h1>Kaboot</h1>
+        </NavLink>
 
-        <input placeholder="lobby" onChange={e => setLobby(e.target.value)}></input>
+        <form onSubmit={ e => { e.preventDefault(); joinLobby(user, lobby)}}>
+            <input placeholder="name" onChange={e => setUser(e.target.value)}></input>
 
-        <button type="submit">Join!</button>
-    </form>
+            <input placeholder="lobby" onChange={e => setLobby(e.target.value)}></input>
 
+            <button type="submit">Join!</button>
+        </form>
+    </> 
 }
 
 export default WaitingRoom

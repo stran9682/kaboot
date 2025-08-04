@@ -45,21 +45,18 @@ public class GameHub : Hub
             SendAsync("JoinLobby", "admin", $"{connection.Username} joined the {connection.Lobby}");
     }
     
-    // TODO : find a way to create a lobby
     public async Task CreateLobby()
     {
-        // TODO : create game in mongoDb
         Random random = new Random();
         const int maxRetries = 5;
         var attempt = 0;
 
         while (attempt < maxRetries)
         {
-            
-            int pin = random.Next(1, 99999);
-
             try
             {
+                int pin = random.Next(1, 99999);
+                
                 GameInfo lobby = new GameInfo()
                 {
                     AdminConnection = Context.ConnectionId,
@@ -81,5 +78,4 @@ public class GameHub : Hub
         
         throw new Exception("Failed to create lobby");
     }
-    
 }

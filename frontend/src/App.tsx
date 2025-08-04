@@ -1,47 +1,22 @@
-import { useState } from 'react'
 import './App.css'
+import { BrowserRouter, Routes, Route, } from "react-router-dom";
 import MenuComponent from './components/MenuComponent';
-import { useSignalR } from "./components/SignalRConnection"
+import WaitingRoom from './components/waitingroom';
+import CreateGame from './components/CreateGame';
 
 function App() {
 
-  const [menuState, setMenuState] = useState(0);
-  const { invokeMethod, registerListener } = useSignalR("http://localhost:5285/game");
-
-  const joinLobby = async (username: string, lobby: string) => {
-    registerListener("JoinLobby", (user, message) => {
-      console.log("message:", message);
-    });
-
-    try {
-      await invokeMethod("JoinLobby", { username, lobby });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  var counter = 0;
-
-  const createLobby = async (setPin: (pin: string) => void) => {
-    registerListener("CreateLobby", (pin: string) => {
-      counter += 1;
-      console.log(counter)
-
-      setPin(pin)
-    });
-
-    try {
-      await invokeMethod("CreateLobby");
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
   return (
     <>
-      <h1 onClick={() => setMenuState(0)}>Kaboot</h1>
-      <MenuComponent setMenuState={setMenuState} menu={menuState} joinLobby={joinLobby} createLobby={createLobby}/>
+      <BrowserRouter>
+        <Routes>
+          <Route path ="/" element={<MenuComponent/>}/>
+          <Route path ="/create" element={<CreateGame/>}/>
+          <Route path ="join" element={<WaitingRoom/>}/>
+        </Routes>
+      </BrowserRouter>
     </>
   )
 }
+
 export default App
