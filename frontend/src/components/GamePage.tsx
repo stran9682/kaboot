@@ -1,16 +1,32 @@
 import { useState } from "react";
-import { useLocation } from 'react-router-dom';
 import { QuestionComponent } from "./QuestionComponent";
 import type { Question } from "./CreateGame";
 
-export const GamePage = () => {
-    const [index, setIndex] = useState(-1);
-    const location = useLocation();
-    const questions = location.state
+export const GamePage = ({questions} : {questions : Question[]}) => {
+    const [index, setIndex] = useState(0);
+    const [displayLeaderboard, setDisplayLeaderboard] = useState(false);
+
+    // const location = useLocation();
+    // const questions = location.state
+
+    const changePage = () => {
+        if (displayLeaderboard){
+            setDisplayLeaderboard(false)
+            setIndex(index+1)
+        }
+        else {
+            setDisplayLeaderboard(true)
+        }
+    }
 
     return <>
-        <button onClick={() => setIndex(index+1)}></button>
+        <button onClick={() => changePage()}>Continue</button>
 
-        {questions.map((question: Question) => <QuestionComponent question={question}/>)}
+        {index}
+
+        {!displayLeaderboard ? 
+            <QuestionComponent question={questions[index]}/> :
+            <h1>Leaderboard!</h1>
+        }
     </>
 }

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, } from "react-router-dom";
 import MenuComponent from './components/MenuComponent';
 import WaitingRoom from './components/waitingroom';
 import {CreateGame} from './components/CreateGame';
-import { GamePage } from './components/GamePage';
+import { GameLobbyHub } from './components/GameLobbyHub';
 
 function App() {
 
@@ -14,7 +14,7 @@ function App() {
           <Route path ="/" element={<MenuComponent/>}/>
           <Route path ="/create" element={<CreateGame/>}/>
           <Route path ="/join" element={<WaitingRoom/>}/>
-          <Route path ="/game" element={<GamePage/>}/>
+          <Route path ="/game" element={<GameLobbyHub/>}/>
         </Routes>
       </BrowserRouter>
     </>

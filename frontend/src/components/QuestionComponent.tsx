@@ -4,6 +4,6 @@ export const QuestionComponent = ({question} : {question: Question}) => {
     return <>
         <h1>{question.Question}</h1>
         
-        {question.Answers.map(answer => <li>{answer}</li>)}
+        {question.Answers.map(answer => <li key={answer}>{answer}</li>)}
     </>
 }
