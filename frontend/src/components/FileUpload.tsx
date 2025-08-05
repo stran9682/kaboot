@@ -1,10 +1,10 @@
 import { useState } from "react";
+import type { Question } from "./CreateGame";
 
-const FileUpload = () => {
+const FileUpload = ({setGameSelected} : {setGameSelected : (selected : Question[] | null) => void}) => {
     const [file, setFile] = useState<File | null> (null) ;
 
     const [status, setStatus] = useState("")
-
 
     const handleFileChange = (e : React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
@@ -29,6 +29,8 @@ const FileUpload = () => {
 
                 console.log(data)
 
+                setGameSelected(data)
+
                 setStatus("success!")
             }
             catch (error) {
@@ -44,8 +46,6 @@ const FileUpload = () => {
         {file && (<button onClick={handleUpload}>Upload!</button>)}
 
         <p>{status}</p>
-
-        {status==='success!' && (<button>Start Game</button>)}
     </>
 }
 
