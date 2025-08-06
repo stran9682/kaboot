@@ -28,7 +28,7 @@ builder.Services.AddCors(opt =>
 });
 
 // TODO : maybe not the thing i need right now.
-builder.Services.AddSingleton<SharedDb>();
+builder.Services.AddSingleton<ConnectionDb>();
 
 var app = builder.Build();
 

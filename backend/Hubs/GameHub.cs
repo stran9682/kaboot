@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using backend.DataService;
 using backend.Models;
 using Microsoft.AspNetCore.SignalR;
@@ -7,12 +8,12 @@ namespace backend.Hubs;
 
 public class GameHub : Hub
 {
-    private readonly SharedDb _sharedDb;
+    private readonly ConnectionDb _connectionDb;
     private readonly MongoDbService _mongoDbService;
 
-    public GameHub(SharedDb sharedDb, MongoDbService  mongoDb)
+    public GameHub(ConnectionDb connectionDb, MongoDbService  mongoDb)
     {
-        _sharedDb = sharedDb;
+        _connectionDb = connectionDb;
         _mongoDbService =  mongoDb;
     }
 
@@ -22,60 +23,57 @@ public class GameHub : Hub
             SendAsync("JoinLobby", "admin", $"{connection.Username} joined the lobby");
     }
 
-    public async Task JoinLobby(UserConnection connection)
+    public async Task JoinLobby(string lobbyName, UserConnection connection)
     {
         // TODO : Check if connection.Lobby is valid before adding user
-        if (false)
+        if (!_connectionDb.LobbyData.ContainsKey(lobbyName))
         {
-            // send message to Context.connectionId,
+            return;
         }
         
-        await Groups.AddToGroupAsync(Context.ConnectionId, connection.Lobby);
+        await Groups.AddToGroupAsync(Context.ConnectionId, lobbyName);
         
         // TODO : add UserConnection to ConnectionId hashmap 
         // Key: string Context.ConnectionId , Value: UserConnection Connection
+        
         
         // TODO : then add UserConnection to Groups hashmap
         // Key: string Group , Value : UserConnection Connection (same Connection)
         
         // TODO : send update to admin to update players list
         // Get admin connection from mongoDb , then use Clients.User(adminID)
-        
-        await Clients.Group(connection.Lobby).
-            SendAsync("JoinLobby", "admin", $"{connection.Username} joined the {connection.Lobby}");
     }
     
     public async Task CreateLobby()
     {
-        Random random = new Random();
-        const int maxRetries = 5;
-        var attempt = 0;
-
-        while (attempt < maxRetries)
-        {
-            try
-            {
-                int pin = random.Next(1, 99999);
-                
-                GameInfo lobby = new GameInfo()
-                {
-                    AdminConnection = Context.ConnectionId,
-                    PinCode = pin
-                };
-
-                await _mongoDbService.CreateAsync(lobby);
-
-                await Clients.Caller
-                    .SendAsync("CreateLobby", pin.ToString());
-                
-                return;
-            }
-            catch (Exception ex)
-            {
-                attempt++;
-            }
-        }
+        int pin;
         
-        throw new Exception("Failed to create lobby");
+        do
+        {
+            Random random = new Random();
+        
+            pin = random.Next(1, 99999);
+        }
+        while (_connectionDb.LobbyData.ContainsKey(pin.ToString()));
+
+        Lobby lobby = new()
+        {
+            AdminConnectionId = Context.ConnectionId,
+            Pin = pin.ToString()
+        };
+        
+        _connectionDb.LobbyData.TryAdd(pin.ToString(), lobby);
+        
+        await Clients.Caller
+            .SendAsync("CreateLobby", pin.ToString());
+    }
+
+    public async Task DisconnectUser(string pin)
+    {
+        _connectionDb.LobbyData.TryGetValue(pin, out var lobby);
+        
+        
+        
+        
     }
 }

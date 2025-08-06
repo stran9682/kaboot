@@ -4,9 +4,11 @@ import MenuComponent from './components/MenuComponent';
 import WaitingRoom from './components/waitingroom';
 import {CreateGame} from './components/CreateGame';
 import { GameLobbyHub } from './components/GameLobbyHub';
+import signalRService from './services/SignalRService';
+
+await signalRService.StartConnection()
 
 function App() {
-
   return (
     <>
       <BrowserRouter>
