@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import signalRService from "../services/SignalRService";
 
-const joinLobby = (username : string, lobby : string) => {
-
+const joinLobby = async (username : string, pin : string) => {
+    console.log("did this work?")
+    signalRService.Invoke("JoinLobby", pin, username)
 }
 
 const WaitingRoom = () => {

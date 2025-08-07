@@ -23,25 +23,23 @@ public class GameHub : Hub
             SendAsync("JoinLobby", "admin", $"{connection.Username} joined the lobby");
     }
 
-    public async Task JoinLobby(string lobbyName, UserConnection connection)
+    public async Task JoinLobby(string pin, string username)
     {
-        // TODO : Check if connection.Lobby is valid before adding user
-        if (!_connectionDb.LobbyData.ContainsKey(lobbyName))
+        _connectionDb.LobbyData.TryGetValue(pin, out var lobbyData);
+
+        if (lobbyData == null) return; // game does not exist
+
+        UserConnection userConnection = new UserConnection()
         {
-            return;
+            Username = username
+        };
+
+        if (lobbyData.Players.TryAdd(Context.ConnectionId, userConnection))
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, pin);
+
+            await Clients.Client(lobbyData.AdminConnectionId).SendAsync("Players", lobbyData.Players.Values.ToList());
         }
-        
-        await Groups.AddToGroupAsync(Context.ConnectionId, lobbyName);
-        
-        // TODO : add UserConnection to ConnectionId hashmap 
-        // Key: string Context.ConnectionId , Value: UserConnection Connection
-        
-        
-        // TODO : then add UserConnection to Groups hashmap
-        // Key: string Group , Value : UserConnection Connection (same Connection)
-        
-        // TODO : send update to admin to update players list
-        // Get admin connection from mongoDb , then use Clients.User(adminID)
     }
     
     public async Task CreateLobby()
@@ -66,14 +64,5 @@ public class GameHub : Hub
         
         await Clients.Caller
             .SendAsync("CreateLobby", pin.ToString());
-    }
-
-    public async Task DisconnectUser(string pin)
-    {
-        _connectionDb.LobbyData.TryGetValue(pin, out var lobby);
-        
-        
-        
-        
     }
 }
