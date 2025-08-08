@@ -8,7 +8,6 @@ type UserConnection = {
     score : number
 }
 
-
 export const GameLobbyHub = () => {
  
     const updatePin = (pin : string) => {
