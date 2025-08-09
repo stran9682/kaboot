@@ -41,6 +41,8 @@ public class GameHub : Hub
             await Groups.AddToGroupAsync(Context.ConnectionId, pin);
 
             await Clients.Client(lobbyData.AdminConnectionId).SendAsync("Players", lobbyData.Players.Values.ToList());
+            
+            await Clients.Caller.SendAsync("ConfirmJoin");
         }
     }
     
@@ -60,9 +62,23 @@ public class GameHub : Hub
         {
             AdminConnectionId = Context.ConnectionId,
         };
+
+        if (_connectionDb.ConnectionData.TryGetValue(Context.ConnectionId, out string? oldPin))
+        {
+            _connectionDb.LobbyData.TryRemove(oldPin, out _);
+        }
         
-        _connectionDb.LobbyData.TryAdd(pin.ToString(), lobby);
-        _connectionDb.ConnectionData.TryAdd(Context.ConnectionId, pin.ToString());
+        _connectionDb.ConnectionData.AddOrUpdate(
+            Context.ConnectionId,
+            addValue: pin.ToString(),
+            updateValueFactory: (k, v) => pin.ToString()
+        );
+
+        _connectionDb.LobbyData.AddOrUpdate(
+            pin.ToString(),
+            addValue: lobby,
+            updateValueFactory: (k, v) => lobby
+        );
         
         await Clients.Caller
             .SendAsync("CreateLobby", pin.ToString());
