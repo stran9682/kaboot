@@ -1,23 +1,19 @@
-using System.Collections.Concurrent;
 using backend.DataService;
 using backend.Models;
 using Microsoft.AspNetCore.SignalR;
-using MongoDB.Driver;
 
 namespace backend.Hubs;
 
 public class GameHub : Hub
 {
-    private readonly ConnectionDb _connectionDb;
-    private readonly MongoDbService _mongoDbService;
-
-    public GameHub(ConnectionDb connectionDb, MongoDbService  mongoDb)
+    private readonly RedisService _redis;
+    
+    public GameHub(RedisService redis)
     {
-        _connectionDb = connectionDb;
-        _mongoDbService =  mongoDb;
+        _redis = redis;
     }
 
-    public async Task JoinLobbyTest(UserConnection connection)
+    public async Task JoinLobbyTest(UserInfo connection)
     {
         await Clients.All.
             SendAsync("JoinLobby", "admin", $"{connection.Username} joined the lobby");
@@ -25,90 +21,98 @@ public class GameHub : Hub
 
     public async Task JoinLobby(string pin, string username)
     {
-        _connectionDb.LobbyData.TryGetValue(pin, out var lobbyData);
+        await Reset(Context.ConnectionId);
+        
+        string? adminId = await _redis.GetAdmin(pin);
+        
+        if (! await _redis.LobbyExists(pin) || adminId is null) 
+            return; // game does not exist
 
-        if (lobbyData == null) return; // game does not exist
-
-        UserConnection userConnection = new UserConnection()
+        UserInfo userInfo = new UserInfo()
         {
             Username = username
         };
+        
+        await _redis.CreateUser(Context.ConnectionId, pin);
+        
+        await _redis.AddToLobby(userInfo, pin, Context.ConnectionId);
+        
+        await Groups.AddToGroupAsync(Context.ConnectionId, pin);
+        
+        Lobby? updatedLobby = await _redis.GetLobby(pin);
+        
+        if (updatedLobby is null) return; // this should honestly never run
 
-        if (lobbyData.Players.TryAdd(Context.ConnectionId, userConnection))
-        {
-            _connectionDb.ConnectionData.TryAdd(Context.ConnectionId, pin);
+        await Clients.Client(adminId).SendAsync("Players", updatedLobby.Users.Values.ToList());
             
-            await Groups.AddToGroupAsync(Context.ConnectionId, pin);
-
-            await Clients.Client(lobbyData.AdminConnectionId).SendAsync("Players", lobbyData.Players.Values.ToList());
-            
-            await Clients.Caller.SendAsync("ConfirmJoin");
-        }
+        await Clients.Caller.SendAsync("ConfirmJoin");
     }
     
     public async Task CreateLobby()
     {
         int pin;
-        
+        Random random = new Random();
+
         do
         {
-            Random random = new Random();
-        
-            pin = random.Next(1, 99999);
+            pin = random.Next(1, 100000);
         }
-        while (_connectionDb.LobbyData.ContainsKey(pin.ToString()));
-
-        Lobby lobby = new()
+        while (await _redis.LobbyExists(pin.ToString()));
+        
+        Lobby lobby = new Lobby()
         {
-            AdminConnectionId = Context.ConnectionId,
+            AdminConnectionId = Context.ConnectionId
         };
-
-        if (_connectionDb.ConnectionData.TryGetValue(Context.ConnectionId, out string? oldPin))
-        {
-            _connectionDb.LobbyData.TryRemove(oldPin, out _);
-        }
         
-        _connectionDb.ConnectionData.AddOrUpdate(
-            Context.ConnectionId,
-            addValue: pin.ToString(),
-            updateValueFactory: (k, v) => pin.ToString()
-        );
-
-        _connectionDb.LobbyData.AddOrUpdate(
-            pin.ToString(),
-            addValue: lobby,
-            updateValueFactory: (k, v) => lobby
-        );
+        await Reset(Context.ConnectionId);
         
-        await Clients.Caller
-            .SendAsync("CreateLobby", pin.ToString());
+        await _redis.CreateLobby(lobby, pin.ToString());
+        
+        await _redis.CreateUser(Context.ConnectionId, pin.ToString());
+        
+        await Clients.Caller.SendAsync("CreateLobby", pin.ToString());
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        _connectionDb.ConnectionData.TryGetValue(Context.ConnectionId, out var pin);
-        
-        if (pin is null) return;
-        
-        _connectionDb.LobbyData.TryGetValue(pin, out var lobby);
+        await Reset(Context.ConnectionId);
+    }
 
-        if (lobby is null) return;
+    private async Task Reset(string connectionId)
+    {
+        string? oldPin = await _redis.RemoveUser(connectionId);
         
-        if (lobby.AdminConnectionId != Context.ConnectionId)
+        if (oldPin is null) return;
+        
+        await Groups.RemoveFromGroupAsync(connectionId, oldPin);
+        
+        Lobby? lobby = await _redis.GetLobby(oldPin);
+
+        if (lobby is not null && connectionId == lobby.AdminConnectionId)
         {
-            lobby.Players.TryRemove(Context.ConnectionId, out _);
-
-            _connectionDb.ConnectionData.TryRemove(Context.ConnectionId, out _);
-            
-            await Clients.Client(lobby.AdminConnectionId).SendAsync("Players", lobby.Players.Values.ToList());
+            List<string>? connectionIds = await _redis.RemoveLobby(oldPin);
+            await HandleLobbyCleanup(connectionIds); 
         }
-        else
+        else if (lobby is not null)
         {
-            _connectionDb.LobbyData.TryRemove(pin, out _);
-            
-            _connectionDb.ConnectionData.TryRemove(Context.ConnectionId, out _);
-            
-            await Clients.Group(pin).SendAsync("EndSession");
+            await Clients.Client(lobby.AdminConnectionId).SendAsync("Players", lobby.Users.Values.ToList());
+        }
+    }
+
+    private async Task HandleLobbyCleanup(List<string>? connectionIds)
+    {
+        if (connectionIds is null || connectionIds.Count == 0) return;
+
+        foreach (var connectionId in connectionIds)
+        {
+            string? oldPin = await _redis.RemoveUser(connectionId);
+
+            if (oldPin is not null)
+            {
+                await Groups.RemoveFromGroupAsync(connectionId, oldPin);
+                
+                await Clients.Client(connectionId).SendAsync("EndSession");
+            }
         }
     }
 }

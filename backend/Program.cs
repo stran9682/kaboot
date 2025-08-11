@@ -1,21 +1,40 @@
 using backend.DataService;
 using backend.Hubs;
 using backend.Models;
+using Microsoft.AspNetCore.SignalR.StackExchangeRedis;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
+/*
+ * MongoDB
+ */
 builder.Services.Configure<MongoDbSettings>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.AddSingleton<MongoDbService>();
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+/*
+ * SignalR + Redis
+ */
+builder.Services.AddSignalR()
+    .AddStackExchangeRedis("localhost:6379");
 
-builder.Services.AddSignalR();
+builder.Services.AddSingleton<IConnectionMultiplexer>(
+    ConnectionMultiplexer.Connect("localhost:6379"));
+
+builder.Services.AddSingleton<RedisService>();
+
+/*
+ * Swagger
+ */
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 
+/*
+ * Cors
+ */
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("frontend", builder =>
@@ -26,9 +45,6 @@ builder.Services.AddCors(opt =>
             .AllowCredentials();
     });
 });
-
-// TODO : maybe not the thing i need right now.
-builder.Services.AddSingleton<ConnectionDb>();
 
 var app = builder.Build();
 

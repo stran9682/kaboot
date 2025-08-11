@@ -14,6 +14,10 @@ const WaitingRoom = () => {
         signalRService.CreateEventListener("EndSession", () => {navigate("/")})
 
         signalRService.CreateEventListener("ConfirmJoin", () => {setJoinedGame(true)})
+
+        return () => {
+            signalRService.RemoveEventListener("ConfirmJoin")
+        }
     }, [])
 
     const [user, setUser] = useState <string> ("");
