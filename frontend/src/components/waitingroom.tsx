@@ -13,10 +13,13 @@ const WaitingRoom = () => {
     useEffect(()=> {
         signalRService.CreateEventListener("EndSession", () => {navigate("/")})
 
+        signalRService.CreateEventListener("StartGame", () => {navigate("/player")});
+
         signalRService.CreateEventListener("ConfirmJoin", () => {setJoinedGame(true)})
 
         return () => {
             signalRService.RemoveEventListener("ConfirmJoin")
+            signalRService.RemoveEventListener("StartGame")
         }
     }, [])
 

@@ -5,6 +5,7 @@ import WaitingRoom from './components/waitingroom';
 import {CreateGame} from './components/CreateGame';
 import { GameLobbyHub } from './components/GameLobbyHub';
 import signalRService from './services/SignalRService';
+import { AnswerHub } from './components/AnswerHub';
 
 await signalRService.StartConnection()
 
@@ -17,6 +18,7 @@ function App() {
           <Route path ="/create" element={<CreateGame/>}/>
           <Route path ="/join" element={<WaitingRoom/>}/>
           <Route path ="/game" element={<GameLobbyHub/>}/>
+          <Route path ="/player" element={<AnswerHub/>}/>
         </Routes>
       </BrowserRouter>
     </>

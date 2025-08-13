@@ -46,11 +46,17 @@ export const GameLobbyHub = () => {
 
     const [gameStarted, setGameStarted] = useState(false)
 
+    const handleStartGame = async () => {
+        setGameStarted(true)
+        
+        await signalRService.Invoke("StartGame")
+    }
+
     return !gameStarted ? 
         <>
             <h2>Lobby!</h2> 
             <h1>{pin}</h1>
-            <button onClick={() => setGameStarted(true)}>Start Game</button>
+            <button onClick={() => handleStartGame()}>Start Game</button>
 
             {users.map(user => <li key={user.username}>{user.username}</li>)}
         </>

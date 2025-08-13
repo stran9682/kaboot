@@ -73,6 +73,16 @@ public class GameHub : Hub
         await Clients.Caller.SendAsync("CreateLobby", pin.ToString());
     }
 
+    public async Task StartGame()
+    {
+        string? pin = await _redis.GetPin(Context.ConnectionId);
+        
+        // Person other than admin is invoking, not allowed
+        if (pin is null || await _redis.GetAdmin(pin) != Context.ConnectionId) return;
+        
+        await Clients.Group(pin).SendAsync("StartGame");
+    }
+
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await Reset(Context.ConnectionId);

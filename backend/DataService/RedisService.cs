@@ -25,7 +25,7 @@ public class RedisService
     
     public async Task CreateUser(string connectionId, string pin)
     {
-        await _db.StringSetAsync(connectionId, pin);
+        await _db.StringSetAsync($"player:{connectionId}", pin);
     }
     
     public async Task<Lobby?> GetLobby(string pin)
@@ -42,7 +42,7 @@ public class RedisService
     
     public async Task<string?> GetPin(string connectionId)
     {
-        return await _db.StringGetAsync(connectionId);
+        return await _db.StringGetAsync($"player:{connectionId}");
     }
     
     public async Task<bool> LobbyExists(string pin)
@@ -63,7 +63,7 @@ public class RedisService
 
     public async Task<string?> RemoveUser(string connectionId)
     {
-        string? pin = await _db.StringGetAsync(connectionId);
+        string? pin = await _db.StringGetAsync($"player:{connectionId}");
         
         await _db.KeyDeleteAsync(connectionId);
         
