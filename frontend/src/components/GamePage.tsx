@@ -2,19 +2,27 @@ import { useState } from "react";
 import { QuestionComponent } from "./QuestionComponent";
 import type { Question } from "./CreateGame";
 import { LeaderboardComponent } from "./LeaderboardComponent";
+import signalRService from "../services/SignalRService";
 
 export const GamePage = ({questions} : {questions : Question[]}) => {
     const [index, setIndex] = useState(0);
     const [displayLeaderboard, setDisplayLeaderboard] = useState(false);
 
-    // const location = useLocation();
-    // const questions = location.state
+    const nextQuestion = async () => {
+        if (index != questions.length){
+            await signalRService.Invoke("SendToPlayers", "NextQuestion", [])
+        }
+        else {
+            // final placement
+        }       
+    }
 
     const changePage = () => {
         setDisplayLeaderboard(!displayLeaderboard)
 
         if (displayLeaderboard){
             setIndex(index+1)
+            nextQuestion()
         }
     }
     

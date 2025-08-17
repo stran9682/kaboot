@@ -12,13 +12,7 @@ public class GameHub : Hub
     {
         _redis = redis;
     }
-
-    public async Task JoinLobbyTest(UserInfo connection)
-    {
-        await Clients.All.
-            SendAsync("JoinLobby", "admin", $"{connection.Username} joined the lobby");
-    }
-
+    
     public async Task JoinLobby(string pin, string username)
     {
         await Reset(Context.ConnectionId);
@@ -73,16 +67,16 @@ public class GameHub : Hub
         await Clients.Caller.SendAsync("CreateLobby", pin.ToString());
     }
 
-    public async Task StartGame()
+    public async Task SendToPlayers(string method, params object[] parameters)
     {
         string? pin = await _redis.GetPin(Context.ConnectionId);
         
         // Person other than admin is invoking, not allowed
         if (pin is null || await _redis.GetAdmin(pin) != Context.ConnectionId) return;
         
-        await Clients.Group(pin).SendAsync("StartGame");
+        await Clients.Group(pin).SendAsync(method, parameters);
     }
-
+    
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await Reset(Context.ConnectionId);

@@ -37,7 +37,7 @@ public class GameController : Controller
 
             string result = await reader.ReadToEndAsync();
 
-            return Ok(result);
+            return Ok(result.ToLower());
         }
         finally
         {

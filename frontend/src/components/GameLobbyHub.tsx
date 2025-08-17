@@ -11,7 +11,7 @@ type UserConnection = {
 export const GameLobbyHub = () => {
  
     const updatePin = (pin : string) => {
-        console.log("Pin set!")
+        console.log("Pin set!: " + pin)
         setPin(pin)
     }
 
@@ -49,7 +49,7 @@ export const GameLobbyHub = () => {
     const handleStartGame = async () => {
         setGameStarted(true)
         
-        await signalRService.Invoke("StartGame")
+        await signalRService.Invoke("SendToPlayers", "StartGame", [])
     }
 
     return !gameStarted ? 

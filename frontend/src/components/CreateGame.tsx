@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 export type Question = {
-    Question: string
-    Time: number
-    Answers: string []
-    CorrectIndex: number
+    question: string
+    time: number
+    answers: string []
+    correctindex: number
 }
 
 export const CreateGame = () => {
@@ -27,7 +27,7 @@ export const CreateGame = () => {
         Coming soon!
 
         {gameSelected && <>
-            {gameSelected.map(question => <li>{question.Question}</li>)}
+            {gameSelected.map(question => <li>{question.question}</li>)}
             <button onClick={() => navigate("/game", {state: gameSelected})}>Start Game</button>
         </>}
     </>

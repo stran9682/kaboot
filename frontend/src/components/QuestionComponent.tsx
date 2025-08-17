@@ -4,15 +4,22 @@ import { useEffect, useState } from "react";
 
 export const QuestionComponent = ({question, changePage} : {question: Question, changePage : () => void}) => {
     
-    const [time, setTime] = useState(question.Time + 3);
+    const [time, setTime] = useState(question.time + 3);
     const [displayQuestion, setDisplayQuestion] = useState(false);
 
     useEffect(() => {
 
-        if (time <= 0){
+        if (time == 0){
             changePage()
         } 
-        else if (time <= question.Time){
+        else if (time == question.time){
+
+            const alertPlayers = async () => {
+                await signalRService.Invoke("SendToPlayers", "AnswerScreen", [question])
+            }
+
+            alertPlayers()
+
             setDisplayQuestion(true);
         }
 
@@ -22,19 +29,15 @@ export const QuestionComponent = ({question, changePage} : {question: Question, 
 
         return () => clearInterval(interval);
     }, [time])
- 
-    useEffect(() => {
-        //signalRService.Invoke("some_method", question)
-    }, [])
 
     return displayQuestion ? <>
-        <h1>{question.Question}</h1>
+        <h1>{question.question}</h1>
 
         <h2>{time}</h2>
         
-        {question.Answers.map(answer => <li key={answer}>{answer}</li>)}
+        {question.answers.map(answer => <li key={answer}>{answer}</li>)}
     </> : <>
-        <h1>{question.Question}</h1>
+        <h1>{question.question}</h1>
 
         <h2>Get ready to answer!</h2>
     </>
