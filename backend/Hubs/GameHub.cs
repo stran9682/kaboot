@@ -12,6 +12,41 @@ public class GameHub : Hub
     {
         _redis = redis;
     }
+
+    public async Task AddToScore(int score, int submittedIndex)
+    {
+        string? pin = await _redis.GetPin(Context.ConnectionId);
+        
+        if (pin is null) return;
+        
+        string? admin =  await _redis.GetAdmin(pin);
+        
+        if (admin is null) return;
+        
+        await _redis.AddToScore(score, pin, Context.ConnectionId);
+        
+        await Clients.Client(admin).SendAsync("GetSubmission", submittedIndex);
+    }
+
+    public async Task GetPlayerPlacements()
+    {
+        string? pin = await _redis.GetPin(Context.ConnectionId);
+        
+        if (pin is null) return;
+        
+        Lobby? lobby = await _redis.GetLobby(pin);
+        
+        if (lobby is null) return;
+        
+        List<UserInfo> users = lobby.Users.Values.OrderBy(user => user.Score).ToList();
+        
+        await Clients.Caller.SendAsync("GetPlayers", users);
+
+        for (int i = 0; i < users.Count; i++)
+        {
+            await Clients.Client(users[i].ConnectionId).SendAsync("GetPlayerPlacements", i);
+        }
+    }
     
     public async Task JoinLobby(string pin, string username)
     {
@@ -24,7 +59,8 @@ public class GameHub : Hub
 
         UserInfo userInfo = new UserInfo()
         {
-            Username = username
+            Username = username,
+            ConnectionId = Context.ConnectionId
         };
         
         await _redis.CreateUser(Context.ConnectionId, pin);

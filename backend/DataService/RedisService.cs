@@ -18,6 +18,11 @@ public class RedisService
         await _db.JSON().SetAsync($"lobby:{pin}", $"$.Users.{connectionId}", user);
     }
 
+    public async Task AddToScore(int score, string pin, string connectionId)
+    {
+        await _db.JSON().NumIncrbyAsync($"lobby:{pin}", $"$.Users.{connectionId}.Score", score);
+    }
+
     public async Task CreateLobby(Lobby lobby, string pin)
     {
         await _db.JSON().SetAsync($"lobby:{pin}", "$", lobby);

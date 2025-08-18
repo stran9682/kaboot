@@ -7,6 +7,7 @@ export const AnswerHub = () => {
     
     const [question, setQuestion] = useState<Question | undefined>(undefined);
     const [answering, setAnswering] = useState(false);
+    const [finished, setFinished] = useState(false)
 
     useEffect(() => {
         const handleSetAnswering = (question: Question[]) => {
@@ -17,21 +18,25 @@ export const AnswerHub = () => {
             console.log(question)
         }
 
-        const nextQuestion = () => {
-            setAnswering(false);
-        }
 
         signalRService.CreateEventListener("answerscreen", handleSetAnswering)
-        signalRService.CreateEventListener("nextquestion", nextQuestion)
+        signalRService.CreateEventListener("nextquestion", () => setAnswering(false))
+        signalRService.CreateEventListener("finalquestion", () => {setAnswering(false); setFinished(true)})
 
         return () => {
             signalRService.RemoveEventListener("answerscreen")
             signalRService.RemoveEventListener("nextquestion")
+            signalRService.RemoveEventListener("finalquestion")
         }
     }, [])
+
+    console.log(finished)
 
     return answering ? 
         <AnswerComponent question={question}/>
     :
-        <h1>Get ready!</h1>
+        !finished ? 
+            <h1>Get ready!</h1>
+        :
+            <h1>Congrats!! Thanks for playing</h1>
 }
