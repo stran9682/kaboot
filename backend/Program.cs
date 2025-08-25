@@ -16,10 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
  * SignalR + Redis
  */
 builder.Services.AddSignalR()
-    .AddStackExchangeRedis("localhost:6379");
+    .AddStackExchangeRedis(builder.Configuration.GetConnectionString("Redis"));
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(
-    ConnectionMultiplexer.Connect("localhost:6379"));
+    ConnectionMultiplexer.Connect(builder.Configuration.GetConnectionString("Redis")));
 
 builder.Services.AddSingleton<RedisService>();
 
