@@ -1,0 +1,11 @@
+# Use the latest LTS version of Node.js
+FROM node:18-alpine AS build
+ 
+# Set the working directory inside the container
+WORKDIR /app
+
+COPY . .
+
+ENV VITE_API_URL=api
+
+RUN npm install && npm run build

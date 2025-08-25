@@ -8,11 +8,11 @@ using backend.DataService;
 [Route("api/[controller]")]
 public class GameController : Controller
 {
-    private readonly MongoDbService _mongoDbService;
+    // private readonly MongoDbService _mongoDbService;
 
-    public GameController(MongoDbService mongoDbService)
+    public GameController()
     {
-        _mongoDbService = mongoDbService;
+        // _mongoDbService = mongoDbService;
     }
     
     [HttpPost("/convert")]

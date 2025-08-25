@@ -16,8 +16,10 @@ class SignalRService {
         SignalRService._instance = this;
 
         try {
+            const header = import.meta.env.VITE_API_URL
+
             this.conn = new HubConnectionBuilder()
-                .withUrl("http://localhost:5285/game")
+                .withUrl(header+"/game")
                 .configureLogging(LogLevel.Information)
                 .build();
         }

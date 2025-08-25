@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Question } from "./CreateGame";
+const header = import.meta.env.VITE_API_URL
 
 const FileUpload = ({setGameSelected} : {setGameSelected : (selected : Question[] | null) => void}) => {
     const [file, setFile] = useState<File | null> (null) ;
@@ -20,7 +21,7 @@ const FileUpload = ({setGameSelected} : {setGameSelected : (selected : Question[
             formData.append('file', file)
 
             try {
-                const result = await fetch('http://localhost:5285/convert', {
+                const result = await fetch(header + '/convert', {
                     method: 'POST',
                     body: formData
                 });
