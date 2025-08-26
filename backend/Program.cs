@@ -15,6 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 /*
  * SignalR + Redis
  */
+Console.WriteLine(builder.Configuration.GetConnectionString("Redis"));
+
 builder.Services.AddSignalR()
     .AddStackExchangeRedis(builder.Configuration.GetConnectionString("Redis"));
 
