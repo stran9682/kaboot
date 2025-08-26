@@ -20,7 +20,7 @@ spec:
             memory: "128Mi"
             cpu: "500m"
         ports:
-        - containerPort: 5285
+        - containerPort: 8080
         env:
         - name: ConnectionStrings__Redis
           value: redis:6379
@@ -33,6 +33,5 @@ spec:
   selector:
     app: gamehub
   ports:
-  - port: 5285
-    targetPort: 5285
-        
+  - port: 8080
+    targetPort: 8080

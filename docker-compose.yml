@@ -1,40 +1,39 @@
 services:
-  mongodb:
-    image: mongo:7.0
-    container_name: mongo-container
-    ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - connections
+  # mongodb:
+  #   image: mongo:7.0
+  #   container_name: mongo-container
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: example
+  #   volumes:
+  #     - mongo-data:/data/db
+  #   networks:
+  #     - connections
 
   redis:
     image: redis
     container_name: redis
-    ports:
-    - "6379:6379"
     networks:
     - connections
 
 
-  # dotnet:
-  #   build:
-  #     context: ./backend
-  #   container_name: server
-  #   depends_on:
-  #     - mongodb
-  #     - redis
-  #   environment:
-  #     - MongoDB__ConnectionUri=mongodb://root:example@mongodb:27017
-  #   networks:
-  #     - connections
+  dotnet:
+    build:
+      context: ./backend
+    container_name: server
+    depends_on:
+      - redis
+    environment:
+      - ConnectionStrings__Redis=redis:6379
+    networks:
+      - connections
+    ports:
+      - "8080:8080"
 
-volumes:
-  mongo-data:
+# volumes:
+#   mongo-data:
 
 networks:
   connections:

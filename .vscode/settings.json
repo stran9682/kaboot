@@ -1,5 +1,0 @@
-{
-    "yaml.schemas": {
-        "kubernetes://schema/apps/v1%40deployment": "file:///Users/sebastiantran/Documents/webgame/gamehub.yaml"
-    }
-}
