@@ -4,12 +4,11 @@ on:
     branches:
       - "main"
     paths:
-     - 'backend/**'
-     - '!backend/obj/**'
+     - 'frontend/**'
 
 jobs:
   push_to_registry:
-    name: build & push gamehub image to Docker Hub
+    name: build & push frontend image to Docker Hub
     runs-on: ubuntu-latest
 
     steps:
@@ -30,6 +29,6 @@ jobs:
         id: build-push-gamehub
         uses: docker/build-push-action@v3
         with:
-          context: ./backend
+          context: ./frontend
           push: true
-          tags: stran9682/backend:latest
+          tags: stran9682/frontend:latest
