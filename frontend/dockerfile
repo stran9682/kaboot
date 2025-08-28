@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY . .
 
-ENV VITE_API_URL=gamehub
+ENV VITE_API_URL=/gamehub
 
 RUN npm install && npm run build
 
