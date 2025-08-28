@@ -10,6 +10,7 @@ metadata:
       proxy_set_header Upgrade "websocket";
       proxy_set_header Connection "Upgrade";
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
