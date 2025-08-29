@@ -5,6 +5,7 @@ on:
       - "main"
     paths:
      - 'frontend/**'
+  workflow_dispatch:
 
 jobs:
   push_to_registry:
@@ -31,4 +32,4 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: stran9682/frontend:latest
+          tags: stran9682/latest-amd64

@@ -21,6 +21,7 @@ class SignalRService {
             this.conn = new HubConnectionBuilder()
                 .withUrl(header+"/game")
                 .configureLogging(LogLevel.Information)
+                .withAutomaticReconnect()
                 .build();
         }
         catch (e){
