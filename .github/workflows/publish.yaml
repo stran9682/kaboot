@@ -33,4 +33,4 @@ jobs:
         with:
           context: ./backend
           push: true
-          tags: stran9682/gamehub:latest-amd64
+          tags: stran9682/gamehub:latest

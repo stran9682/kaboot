@@ -32,4 +32,4 @@ jobs:
         with:
           context: ./frontend
           push: true
-          tags: stran9682/frontend:latest-amd64
+          tags: stran9682/frontend:latest

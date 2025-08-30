@@ -63,7 +63,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.MapHub<GameHub>("/game");
+// where gamehub listens.
+app.MapHub<GameHub>("/gamehub");
 
 app.UseCors("frontend");
 

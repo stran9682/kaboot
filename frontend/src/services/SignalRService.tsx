@@ -19,7 +19,7 @@ class SignalRService {
             const header = import.meta.env.VITE_API_URL
 
             this.conn = new HubConnectionBuilder()
-                .withUrl(header+"/game")
+                .withUrl(header)
                 .configureLogging(LogLevel.Information)
                 .withAutomaticReconnect()
                 .build();
