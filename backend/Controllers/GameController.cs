@@ -15,7 +15,7 @@ public class GameController : Controller
         // _mongoDbService = mongoDbService;
     }
     
-    [HttpPost("/convert")]
+    [HttpPost("convert")]
     public async Task<IActionResult> ConvertJson(IFormFile file)
     {
         string extension = Path.GetExtension(file.FileName);

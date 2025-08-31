@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { Question } from "./CreateGame";
-const header = import.meta.env.VITE_API_URL
+const header = import.meta.env.VITE_ANOTHER_API
 
 const FileUpload = ({setGameSelected} : {setGameSelected : (selected : Question[] | null) => void}) => {
     const [file, setFile] = useState<File | null> (null) ;

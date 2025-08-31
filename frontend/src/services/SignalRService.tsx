@@ -21,7 +21,7 @@ class SignalRService {
             this.conn = new HubConnectionBuilder()
                 .withUrl(header)
                 .configureLogging(LogLevel.Information)
-                .withAutomaticReconnect()
+                .withAutomaticReconnect([0, 2000, 10000, 30000])
                 .build();
         }
         catch (e){
