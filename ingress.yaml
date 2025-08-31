@@ -22,7 +22,7 @@ spec:
               number: 8080
 
       - pathType: Prefix
-        path: "/api/GameController"
+        path: "/api/Game"
         backend:
           service:
             name: gamehub

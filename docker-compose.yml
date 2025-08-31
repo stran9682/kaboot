@@ -17,6 +17,8 @@ services:
     container_name: redis
     networks:
     - connections
+    ports:
+    - "6379:6379"
 
 
   gamehub:
