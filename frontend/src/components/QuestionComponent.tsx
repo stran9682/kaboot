@@ -46,17 +46,43 @@ export const QuestionComponent = (
         return () => clearInterval(interval);
     }, [time])
 
-    return displayQuestion ? <>
-        <h1>{question.question}</h1>
+    const colors = ["#48a9a6", "#d4b483", "#52489c", "#083d77"];
 
-        <h2>{time}</h2>
+    useEffect(() => {
+        question.answers.forEach((answer, index) => {
+            const el = document.getElementById(answer);
+            if (el) {
+                // You may want to use Tailwind classes instead of direct style assignment
+                el.style.backgroundColor = colors[index];
+            }
+        });
+    }, [displayQuestion]);
 
-        <h2>{submissions} submitted!</h2>
+    return displayQuestion ? <div className="h-screen">
+        <div className="h-2/3 p-10 flex flex-col  items-center bg-gradient-to-b from-indigo-300 via-purple-300 to-pink-300 text-white animate-gradient">
+            <h1 className="text-7xl text-shadow-2xs border border-white rounded-lg px-10 py-5 bg-white text-black">{question.question}</h1>
+
+            <h2>{time}</h2>
+
+            <h2>{submissions} submitted!</h2>
+        </div>
         
-        {question.answers.map(answer => <li key={answer}>{answer}</li>)}
-    </> : <>
-        <h1>{question.question}</h1>
-
-        <h2>Get ready to answer!</h2>
-    </>
+        <div className="h-1/3 bg-white shadow-2xl grid grid-cols-2 gap-6 p-8">
+            {question.answers.map(answer => (
+                <div
+                    id={answer}
+                    key={answer}
+                    className="h-full flex items-center justify-center rounded-xl text-white text-3xl font-semibold shadow-2xl"
+                >
+                    {answer}
+                </div>
+            ))}
+        </div>
+    </div> : <div className="h-screen">        
+        <div className="gap-5 h-screen p-10 flex flex-col justify-center items-center bg-gradient-to-b from-indigo-300 via-purple-300 to-pink-300 text-white animate-gradient">
+            <h1 className="text-7xl text-shadow-2xs border border-white rounded-lg px-10 py-5 bg-white text-black">{question.question}</h1>           
+            <h2 className="text-4xl">Get ready to answer!</h2>
+            <h2 className="text-8xl">{time-question.time}</h2>
+        </div>
+    </div>
 }
