@@ -21,15 +21,12 @@ export const GamePage = ({questions} : {questions : Question[]}) => {
     }
 
     const updateSubmittedAnswers = (index : number) => {
-        const nextCounters = submittedAnswers.map((c, i) => {
-            if (i === index) {
-                return c + 1;
-            } else {
-                return c;
-            }
-        });
-        setSubmittedAnswers(nextCounters);
+        setSubmittedAnswers(prev =>
+            prev.map((num, idx) => (idx === index ? num + 1 : num))
+        );
     }
+
+    console.log(submittedAnswers)
 
     const changePage = () => {
         setDisplayLeaderboard(!displayLeaderboard)
@@ -45,12 +42,10 @@ export const GamePage = ({questions} : {questions : Question[]}) => {
         }
     }
     
-    return questions.length != index ? 
-        !displayLeaderboard ? 
-            <QuestionComponent question={questions[index]} changePage={changePage} updateSubmittedAnswers={updateSubmittedAnswers}/> 
-        : 
-            <LeaderboardComponent question={questions[index]} changePage={changePage} submittedAnswers={submittedAnswers}/>
-        
+    return !displayLeaderboard ? 
+        <QuestionComponent question={questions[index]} changePage={changePage} updateSubmittedAnswers={updateSubmittedAnswers}/> 
+    : questions.length != index ? 
+        <LeaderboardComponent question={questions[index]} changePage={changePage} submittedAnswers={submittedAnswers} special={questions.length-1 == index }/>
     : <>
         <h1>All done! Thanks for playing</h1>
     </>

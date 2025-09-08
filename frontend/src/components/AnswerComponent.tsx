@@ -7,6 +7,7 @@ export const AnswerComponent = ({question} : {question : Question | undefined}) 
     const [isSubmitted, setIsSubmitted] = useState(false);
     const [isGraded, setIsGraded] = useState(false);
     const [submittedAnswer, setSubmittedAnswer] = useState(-1);
+    const [score, setScore] = useState(0);
 
     const [timerActive, setTimerActive] = useState(true);
     const [time, setTime] = useState(question?.time)
@@ -18,13 +19,13 @@ export const AnswerComponent = ({question} : {question : Question | undefined}) 
         setIsSubmitted(true);
         setTimerActive(false);
 
-        score = 0;
-
+        var update = 0;
         if (answer == question!.correctindex){
-            var score = 100 - (100*(question!.time - time!)/question!.time)
+            update = Math.trunc(1000 - (1000*(question!.time - time!)/question!.time))
+            setScore(update)
         }
 
-        await signalRService.Invoke("AddToScore", score, answer)
+        await signalRService.Invoke("AddToScore", update, answer)
     }
 
     useEffect(() => {
@@ -36,6 +37,14 @@ export const AnswerComponent = ({question} : {question : Question | undefined}) 
         signalRService.CreateEventListener("getplayerplacements", (place : number) => {
             setPlace(place)
         })
+
+        const colors = ["#48a9a6", "#d4b483", "#52489c", "#083d77"];
+        question?.answers.forEach((answer, index) => {
+            const el = document.getElementById(answer);
+            if (el) {
+                el.style.backgroundColor = colors[index];
+            }
+        });
 
         return () => {
             signalRService.RemoveEventListener("showgrade")
@@ -49,37 +58,52 @@ export const AnswerComponent = ({question} : {question : Question | undefined}) 
         }
 
         const interval = setInterval(() => {
-            setTime((t) => t! - 1);
-        }, 1000);
+            setTime((t) => t! - 0.1);
+        }, 100);
 
         return () => clearInterval(interval);
-    }, [time])
+    }, [timerActive])
 
     if (question == undefined){
         return <h1>Ooops, this shouldn't run.</h1>
     }
 
-    return !isGraded ? 
-
-        !isSubmitted ? <>
-            {Array.from({ length: question.answers.length }, (_, i) => (
-                <div key={i} onClick={() => handleSubmit(i)}>{i + 1}</div>
+    return <div className="h-screen">            
+        {!isSubmitted ? <div className="h-screen bg-white shadow-2xl grid grid-cols-2 gap-6 p-8">
+            {question.answers.map((answer, index) => (
+                <div
+                    id={answer}
+                    key={answer}
+                    className="h-full flex items-center justify-center rounded-xl text-white text-3xl font-semibold shadow-2xl"
+                    onClick={() => handleSubmit(index)}
+                >
+                    {index+1}
+                </div>
             ))}
-        </> :
-            <h1>Submitted!</h1> 
-    : <>
-        { submittedAnswer == question.correctindex ? <>
-            <h1>Hoorayy!</h1>
-            <h2>+{100 - (100*(question!.time - time!)/question!.time)}</h2>
-        </> : <> 
-            <h1>idiot...</h1>
-            <h2>+0</h2>
-        </> }
+        </div> : isGraded ? <>
+            {submittedAnswer == question.correctindex ? <div className="gap-5 h-screen p-10 flex flex-col justify-center items-center bg-gradient-to-b from-green-500 via-purple-300 to-emerald-500 text-white animate-gradient">
+                <h1 className="text-6xl">Hoorayy!</h1>
+                <h2 className="text-4xl">+{score}</h2>
+                
+                {place >= 5 ? 
+                    <h1 className="text-3xl">You are currently in {place} place!</h1>
+                :
+                    <h1 className="text-3xl">You are on the podium!</h1>
+                }
+            </div> : <div className="gap-5 h-screen p-10 flex flex-col justify-center items-center bg-gradient-to-b from-red-500 via-pink-300 to-orange-500 text-white animate-gradient"> 
+                <h1 className="text-6xl">maybe next time...</h1>
+                <h2 className="text-4xl">+0</h2>
 
-        { place >= 5 ? 
-            <h1>You are currently in {place} place!</h1>
-        :
-            <h1>You are on the podium!</h1>
+                {place >= 5 ? 
+                    <h1 className="text-3xl">You are currently in {place} place!</h1>
+                :
+                    <h1 className="text-3xl">You are on the podium!</h1>
+                }
+
+            </div> }    
+        </> : <div className="gap-5 h-screen p-10 flex flex-col justify-center items-center bg-gradient-to-b from-indigo-300 via-purple-300 to-pink-300 text-white animate-gradient">
+            <h1 className="text-7xl text-shadow-2xs border border-white rounded-lg px-10 py-5 bg-white text-black">Submitted!</h1>
+        </div>   
         }
-    </>
+    </div>
 }

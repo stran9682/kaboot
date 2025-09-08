@@ -1,0 +1,119 @@
+[
+    {
+        "Question": "ASA has meetings...",
+        "Answers": [
+            "Every Monday in UNA 25, 162", "Every Monday in Anderson 311", "Every other Monday in Anderson 311", "Every Wednesday if the month starts on a Monday, otherwise Tuesday"
+        ],
+        "Time": 20,
+        "CorrectIndex": 1,
+        "Image": null
+    },
+    {
+        "Question": "Bobbi's favorite food",
+        "Answers": [
+            "perogies", "pho", "ramen", "pad thai"
+        ],
+        "Time": 20,
+        "CorrectIndex": 1,
+        "Image": null
+    },
+    {
+        "Question": "Isabelle's favorite movie?",
+        "Answers": [
+            "Interstellar", "Spirited Away", "Kpop demon hunters", "Whiplash"
+        ],
+        "Time": 20,
+        "CorrectIndex": 2,
+        "Image": null
+    },
+    {
+        "Question": "Vanna knows the alphabet in what other language?",
+        "Answers": [
+            "French", "Sign Language", "Hungarian", "German"
+        ],
+        "Time": 20,
+        "CorrectIndex": 1,
+        "Image": null
+    },
+    {
+        "Question": "Where does all of joyce's extended family live?",
+        "Answers": [
+            "South Korea", "Reading, PA", "Houston, Texas", "California"
+        ],
+        "Time": 20,
+        "CorrectIndex": 0,
+        "Image": "reading.png"
+    },
+    {
+        "Question": "Sebastian's First Job was where?",
+        "Answers": [
+            "target", "Vans", "giant", "asics"
+        ],
+        "Time": 20,
+        "CorrectIndex": 1,
+        "Image": "target.png"
+    },
+    {
+        "Question": "Where was Vanna born",
+        "Answers": [
+            "Canada", "California", "New York", "Lousiana"
+        ],
+        "Time": 20,
+        "CorrectIndex": 2,
+        "Image": null
+    },
+    {
+        "Question": "Joyce's favorite drink",
+        "Answers": [
+            "Arizona Iced Tea", "Yakult", "Milk", "Poppi"
+        ],
+        "Time": 20,
+        "CorrectIndex": 3,
+        "Image": "drink.png"
+    },
+    {
+        "Question": "Sebastian's favoite album",
+        "Answers": [
+            "Beatopia - beabadoobee", "Charm - Clairo", "Bewitched - Laufey", "Mint Jams - Casiopea"
+        ],
+        "Time": 20,
+        "CorrectIndex": 3,
+        "Image": "bea.png"
+    },
+    {
+        "Question": "Isabelle's major?",
+        "Answers": [
+            "Elementary Ed", "Computer Science", "Political Science", "Accounting"
+        ],
+        "Time": 20,
+        "CorrectIndex": 0,
+        "Image": "bea.png"
+    },
+    {
+        "Question": "Vanna does not have ... ?",
+        "Answers": [
+            "a driver's license", "a middle name", "a ramcard", "a major still..."
+        ],
+        "Time": 20,
+        "CorrectIndex": 1,
+        "Image": null
+    },
+    {
+        "Question": "How long has Joyce been playing soccer for?",
+        "Answers": [
+            "She has never played soccer...", "2 years", "13 years", "5 years"
+        ],
+        "Time": 20,
+        "CorrectIndex": 2,
+        "Image": null
+    },
+    {
+        "Question": "Sebastian's major?",
+        "Answers": [
+            "Jazz Drumset Performance", "Computer Science", "Business", "Physics"
+        ],
+        "Time": 20,
+        "CorrectIndex": 1,
+        "Image": "me.png"
+    }
+]

@@ -8,6 +8,7 @@ export type Question = {
     time: number
     answers: string []
     correctindex: number
+    image: string
 }
 
 export const CreateGame = () => {

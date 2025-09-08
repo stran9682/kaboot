@@ -35,8 +35,9 @@ export const AnswerHub = () => {
     return answering ? 
         <AnswerComponent question={question}/>
     :
-        !finished ? 
-            <h1>Get ready!</h1>
+        !finished ? <div className="gap-5 h-screen p-10 flex flex-col justify-center items-center bg-gradient-to-b from-indigo-300 via-purple-300 to-pink-300 text-white animate-gradient">
+            <h1 className="text-7xl text-shadow-2xs border border-white rounded-lg px-10 py-5 bg-white text-black">Get Ready!</h1>
+        </div>   
         :
             <h1>Congrats!! Thanks for playing</h1>
 }

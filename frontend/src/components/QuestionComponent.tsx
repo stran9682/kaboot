@@ -10,18 +10,24 @@ export const QuestionComponent = (
     const [displayQuestion, setDisplayQuestion] = useState(false);
     const [submissions, setSubmissions] = useState(0);
 
+    var imageSrc = null
+    if (question.image != null){
+        imageSrc = "src/assets/"+question.image
+    }
+
     useEffect(() => {
         signalRService.CreateEventListener("GetSubmission", (submittedIndex : number) => {
-            setSubmissions(submissions + 1)
+            setSubmissions(prev => prev + 1)
             updateSubmittedAnswers(submittedIndex)
-            
-            console.log("Got a submission! : " + submittedIndex)
+            console.log("got a submit!" + submittedIndex)
         });
 
         return () => {
             signalRService.RemoveEventListener("GetSubmission");
         }
     }, [])
+
+    console.log(submissions)
 
     useEffect(() => {
 
@@ -59,12 +65,16 @@ export const QuestionComponent = (
     }, [displayQuestion]);
 
     return displayQuestion ? <div className="h-screen">
-        <div className="h-2/3 p-10 flex flex-col  items-center bg-gradient-to-b from-indigo-300 via-purple-300 to-pink-300 text-white animate-gradient">
+        <div className=" gap-2 h-2/3 p-10 flex flex-col  items-center bg-gradient-to-b from-indigo-300 via-purple-300 to-pink-300 text-white animate-gradient">
             <h1 className="text-7xl text-shadow-2xs border border-white rounded-lg px-10 py-5 bg-white text-black">{question.question}</h1>
 
             <h2>{time}</h2>
 
             <h2>{submissions} submitted!</h2>
+
+            {imageSrc != null ?
+                <img src={imageSrc} style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }} alt="question" />
+            : null}
         </div>
         
         <div className="h-1/3 bg-white shadow-2xl grid grid-cols-2 gap-6 p-8">
