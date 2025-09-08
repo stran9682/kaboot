@@ -1,13 +1,10 @@
-import React from 'react';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
-  Title,
   Tooltip,
   Legend,
-  plugins,
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import type { UserInfo } from './LeaderboardComponent';
