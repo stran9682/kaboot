@@ -1,8 +1,8 @@
-#**Kaboot**
+# **Kaboot**
 
 Multiplayer quiz game, similar to game with that name
 
-##Tech Stack
+## Tech Stack
 - Nginx serving React + Typescript Frontend
 - ASP.NET Core API + Websocket Server
 - Redis for game state storage and websocket backplane
